@@ -2,7 +2,7 @@ import fastf1 as ff
 from fastf1.plotting import *
 from matplotlib import pyplot as plt
 
-class DisplayTrack():
+class DisplayTrack(Track):
     def __init__(self, session, circuit):
         self.session = session
         self.circuit = circuit 
