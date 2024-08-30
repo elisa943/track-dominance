@@ -1,15 +1,22 @@
 import fastf1 as ff
 from fastf1.plotting import *
 from matplotlib import pyplot as plt
+from Track import *
 
 class DisplayTrack(Track):
-    def __init__(self, session, circuit):
+    def __init__(self, session, circuit, driver=None):
         self.session = session
         self.circuit = circuit 
+        self.driver = driver
         
     def plot(self):
+
         # Plot circuit (with fastest lap) https://docs.fastf1.dev/gen_modules/examples_gallery/plot_annotate_corners.html#sphx-glr-gen-modules-examples-gallery-plot-annotate-corners-py
         fastest_lap = self.session.laps.pick_fastest()
+        
+        if self.driver != None: 
+            fastest_lap = self.session.laps.pick_driver(self.driver).pick_fastest()
+        
         tel = fastest_lap.get_telemetry()
         pos = fastest_lap.get_pos_data()
 
