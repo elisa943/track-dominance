@@ -55,10 +55,8 @@ def main():
     event = ff.get_event(season_selected, circuit_selected)
     circuit = session_selected.get_circuit_info()
     
-    # Drivers who raced that weekend # TODO : BUG FOUND NOT FIXED
-    #drivers_info = ergast.get_driver_info(season=season_selected, circuit=circuit_selected, result_type=type_result)
-    drivers_info = ergast.get_driver_info(season=2023, circuit='baku', result_type=type_result).to_numpy()
-    print(drivers_info)
+    # Drivers who raced that weekend
+    drivers_info = ergast.get_driver_info(season=season_selected, circuit=circuit_selected, result_type=type_result).to_numpy()
     num_drivers = len(drivers_info)
     drivers_abr = [drivers_info[i][2] for i in range(num_drivers)]
     drivers_names = [drivers_info[i][4] + " " + drivers_info[i][5] for i in range(num_drivers)]
