@@ -5,14 +5,16 @@ from matplotlib import pyplot as plt
 from Track import *
 
 class DisplayTrack(Track):
-    def __init__(self, session, circuit, driver_color, driver_name=None, ):
+    def __init__(self, session, circuit, driver_color, driver_name=None):
         self.session = session
         self.circuit = circuit 
         self.driver_name = driver_name
         self.driver_color = driver_color # RGB value 
         
     def plot(self):
-
+        # New figure 
+        plt.figure()
+        
         # Plot circuit (with fastest lap) https://docs.fastf1.dev/gen_modules/examples_gallery/plot_annotate_corners.html#sphx-glr-gen-modules-examples-gallery-plot-annotate-corners-py
         fastest_lap = self.session.laps.pick_fastest()
         
@@ -34,7 +36,6 @@ class DisplayTrack(Track):
         plt.plot(rotated_track[:, 0], rotated_track[:, 1], color=self.driver_color)
 
         # Plot
-        print(self.driver_name)
         plt.legend([self.driver_name])
         plt.title(self.session.event['Location'])
         plt.xticks([])

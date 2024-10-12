@@ -1,60 +1,46 @@
-# from tkinter import * # Listbox widget 
 import numpy as np
-import os
 from fastf1.ergast import Ergast
 from DisplayTrack import *
+from LapComparator import *
+from App import *
 from datetime import datetime
 
 def clear(year: int):
     clear_cache(cache_dir=str(year))
 
-def clear_terminal():
-    os.system('cls' if os.name == 'nt' else 'clear')
-
-def check_season(season_selected: int):
-    current_year = datetime.now().year
-    return season_selected >= 1950 and season_selected <= current_year
-
-def check_circuit(circuit_selected: int, circuitsId_season_selected):
-    return 0 <= circuit_selected < len(circuitsId_season_selected)
-
 def check_driver(driver: str, drivers_names, drivers_abr):
     return driver.lower() in drivers_names or driver.upper() in drivers_abr
 
-def display_drivers_list(circuitsId_season_selected):
-    for i in range(len(circuitsId_season_selected)):
-        print(i, circuitsId_season_selected[i])
-
 def main():
-    clear_terminal()
-    ergast = Ergast()
+    ergast = Ergast()  # streamlit run main.py
+    app = App()
     type_of_session = 'Race'
     type_result = 'pandas'
 
     # Pick season
-    season_selected = int(input("Which season ? "))
-    if not check_season(season_selected): 
-        print("Pick a year between 1950 and the current year.")
-        return
-    
-    # Get all circuits from season selected by user  
-    circuitsId_season_selected = ergast.get_circuits(season=season_selected, result_type=type_result)["circuitId"].tolist()
-    
-    # Pick circuit
-    clear_terminal()
-    display_drivers_list(circuitsId_season_selected)
-    circuit_selected = int(input("Which circuit (enter number) ? "))
-    if not check_circuit(circuit_selected, circuitsId_season_selected):
-        print("Pick a circuit from the season.")
-        return 
-    circuit_selected = circuitsId_season_selected[circuit_selected]
+    st.session_state.season_selected = app.which_year()
 
-    session_selected = ff.get_session(season_selected, circuit_selected, type_of_session)
-    session_selected.load()
-    
-    event = ff.get_event(season_selected, circuit_selected)
-    circuit = session_selected.get_circuit_info()
-    
+    # Get all circuits from season selected by user  
+    if 'season_selected' in st.session_state:
+        if st.session_state.season_selected is not None:
+            circuitsId_season_selected = ergast.get_circuits(season=st.session_state.season_selected, result_type=type_result)["circuitId"].tolist()
+        
+            # Pick circuit
+            st.session_state.circuit_selected = app.which_circuit(circuitsId_season_selected)
+        
+            if 'circuit_selected' in st.session_state:
+                if st.session_state.circuit_selected is not None:
+                    st.session_state.session_selected = app.load_data(st.session_state.season_selected, st.session_state.circuit_selected, type_of_session)
+                    event = ff.get_event(st.session_state.season_selected, st.session_state.circuit_selected)
+                    circuit = st.session_state.session_selected.get_circuit_info()
+                    st.write('Data loaded')
+
+
+    #session_selected = ff.get_session(season_selected, circuit_selected, type_of_session)
+    #session_selected.load()
+    #event = ff.get_event(season_selected, circuit_selected)
+    #circuit = session_selected.get_circuit_info()
+    """
     # Drivers who raced that weekend
     drivers_info = ergast.get_driver_info(season=season_selected, circuit=circuit_selected, result_type=type_result).to_numpy()
     num_drivers = len(drivers_info)
@@ -65,6 +51,7 @@ def main():
     driver_to_color = {drivers_abr[i]: drivers_colors[i] for i in range (num_drivers)}
 
     clear_terminal()
+
     print(drivers_abr)
     driver_selected_1 = input("Pick a driver : ")
     driver_selected_2 = input("Pick a second driver : ")
@@ -72,11 +59,19 @@ def main():
         print("Pick a driver from the list")
         return 
     
+
+    lap_compare = LapComparator((driver_selected_1, driver_selected_2), session_selected, fastest_lap=(False, False), num_lap=(1, 1))
+    laps = lap_compare.laps()
+
+    input()
+
+    # Display each driver's fastest laps
     displayTrack_driver_1 = DisplayTrack(session_selected, circuit, driver_to_color[driver_selected_1], abr_to_name[driver_selected_1])
     displayTrack_driver_2 = DisplayTrack(session_selected, circuit, driver_to_color[driver_selected_2], abr_to_name[driver_selected_2])
-
+    
     displayTrack_driver_1.plot()
     displayTrack_driver_2.plot()
+    """
 
 if __name__ == "__main__":
     main()

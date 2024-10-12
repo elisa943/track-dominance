@@ -12,3 +12,6 @@ $(FILE):
 clear: 
 	rm -rf $(CACHE_PATH)
 	@echo "Supression du cache"
+
+show: 
+	ls $(CACHE_PATH)
