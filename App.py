@@ -19,25 +19,40 @@ class App():
     def which_year(self):
         current_year = datetime.now().year
         years = list(range(1950, current_year + 1))
-        st.session_state.selected_date = st.selectbox(
+        selected_date = st.selectbox(
             "Which season?", 
             options=years,
             index=None
         )
-        return st.session_state.selected_date
+        return selected_date
     
     def which_circuit(self, circuits):
-        st.session_state.circuit = st.selectbox(
+        circuit = st.selectbox(
             "Which circuit?", 
             circuits,
             index=None
         )
-        return st.session_state.circuit 
+        return circuit 
 
-    def load_data(self, season_selected, circuit_selected, type_of_session):
+    def which_drivers(self, drivers_name):
+        driver_1 = st.selectbox(
+            "First driver?", 
+            drivers_name,
+            index=None
+        )
+        driver_2 = st.selectbox(
+            "Second driver?", 
+            drivers_name,
+            index=None
+        )
+        return driver_1, driver_2
+
+    def load_data(self, session_selected):
         with st.spinner('Loading data...'):
-            session_selected = ff.get_session(season_selected, circuit_selected, type_of_session)
-            session_selected.load()
-            time.sleep(5)
-            return session_selected
-
+            
+            try:
+                session_selected.load()
+                
+                return (session_selected, circuit)
+            except Exception as e:
+                return (None, None)

@@ -30,48 +30,39 @@ def main():
         
             if 'circuit_selected' in st.session_state:
                 if st.session_state.circuit_selected is not None:
-                    st.session_state.session_selected = app.load_data(st.session_state.season_selected, st.session_state.circuit_selected, type_of_session)
+                    # Get event 
                     event = ff.get_event(st.session_state.season_selected, st.session_state.circuit_selected)
-                    circuit = st.session_state.session_selected.get_circuit_info()
-                    st.write('Data loaded')
 
+                    # Get session (Race)
+                    session_selected = ff.get_session(st.session_state.season_selected, st.session_state.circuit_selected, type_of_session)
+                    st.session_state.session_selected = app.load_data(session_selected)
+                    if st.session_state.session_selected != None:
+                        circuit = session_selected.get_circuit_info()
+                        
+                        # Get drivers
+                        drivers_info = ergast.get_driver_info(
+                            season=st.session_state.season_selected, 
+                            circuit=st.session_state.circuit_selected, 
+                            result_type=type_result
+                        )
+                        drivers_info = drivers_info.to_numpy()
+                        num_drivers = len(drivers_info)
+                        drivers_names = [drivers_info[i][4] + " " + drivers_info[i][5] for i in range(num_drivers)]
+                        drivers_abr = [drivers_info[i][2] for i in range(num_drivers)]
+                        abr_to_name = {drivers_abr[i]: drivers_names[i] for i in range(num_drivers)}
+                        name_to_abr = {drivers_names[i]: drivers_abr[i] for i in range(num_drivers)}
+                        driver_to_color = ff.plotting.get_driver_color_mapping(session_selected)
 
-    #session_selected = ff.get_session(season_selected, circuit_selected, type_of_session)
-    #session_selected.load()
-    #event = ff.get_event(season_selected, circuit_selected)
-    #circuit = session_selected.get_circuit_info()
-    """
-    # Drivers who raced that weekend
-    drivers_info = ergast.get_driver_info(season=season_selected, circuit=circuit_selected, result_type=type_result).to_numpy()
-    num_drivers = len(drivers_info)
-    drivers_abr = [drivers_info[i][2] for i in range(num_drivers)]
-    drivers_names = [drivers_info[i][4] + " " + drivers_info[i][5] for i in range(num_drivers)]
-    abr_to_name = {drivers_abr[i]: drivers_names[i] for i in range(num_drivers)}
-    drivers_colors = [ff.plotting.driver_color(drivers_abr[i]) for i in range(num_drivers)] 
-    driver_to_color = {drivers_abr[i]: drivers_colors[i] for i in range (num_drivers)}
+                        st.session_state.driver_1, st.session_state.driver_2 = app.which_drivers(drivers_names)
+                        if st.session_state.driver_1 != None and st.session_state.driver_2 != None:
+                            displayTrack_driver_1 = DisplayTrack(session_selected, circuit, driver_to_color[name_to_abr[st.session_state.driver_1]], st.session_state.driver_1)
+                            displayTrack_driver_2 = DisplayTrack(session_selected, circuit, driver_to_color[name_to_abr[st.session_state.driver_2]], st.session_state.driver_2)
+                            displayTrack_driver_1.plot_streamlit()
+                            displayTrack_driver_2.plot_streamlit()
 
-    clear_terminal()
-
-    print(drivers_abr)
-    driver_selected_1 = input("Pick a driver : ")
-    driver_selected_2 = input("Pick a second driver : ")
-    if not check_driver(driver_selected_1, drivers_names, drivers_abr) or not check_driver(driver_selected_2, drivers_names, drivers_abr):
-        print("Pick a driver from the list")
-        return 
     
-
-    lap_compare = LapComparator((driver_selected_1, driver_selected_2), session_selected, fastest_lap=(False, False), num_lap=(1, 1))
-    laps = lap_compare.laps()
-
-    input()
-
-    # Display each driver's fastest laps
-    displayTrack_driver_1 = DisplayTrack(session_selected, circuit, driver_to_color[driver_selected_1], abr_to_name[driver_selected_1])
-    displayTrack_driver_2 = DisplayTrack(session_selected, circuit, driver_to_color[driver_selected_2], abr_to_name[driver_selected_2])
-    
-    displayTrack_driver_1.plot()
-    displayTrack_driver_2.plot()
-    """
+    #lap_compare = LapComparator((driver_selected_1, driver_selected_2), session_selected, fastest_lap=(False, False), num_lap=(1, 1))
+    #laps = lap_compare.laps()
 
 if __name__ == "__main__":
     main()

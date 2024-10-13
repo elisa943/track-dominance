@@ -1,5 +1,6 @@
 import fastf1 as ff
 from fastf1.plotting import *
+import streamlit as st
 import numpy as np
 from matplotlib import pyplot as plt
 from Track import *
@@ -43,7 +44,39 @@ class DisplayTrack(Track):
         plt.axis('equal')
         plt.show()
     
+    @staticmethod
     def rotate(self, xy, *, angle):
         rot_mat = np.array([[np.cos(angle), np.sin(angle)],
                             [-np.sin(angle), np.cos(angle)]])
         return np.matmul(xy, rot_mat)
+    
+    def plot_streamlit(self):
+        fig, ax = plt.subplots()
+
+        fastest_lap = self.session.laps.pick_fastest()
+        
+        if self.driver_name != None: 
+            fastest_lap = self.session.laps.pick_driver(ff.plotting.get_driver_abbreviation(self.driver_name, self.session)).pick_fastest()
+        
+        tel = fastest_lap.get_telemetry()
+        pos = fastest_lap.get_pos_data()
+
+        # Get an array of shape [n, 2] where n is the number of points and the second axis is x and y.
+        track = pos.loc[:, ('X', 'Y')].to_numpy()
+
+        # Convert the rotation angle from degrees to radian.
+        track_angle = self.circuit.rotation / 180 * np.pi
+
+        # Rotate and plot the track map.
+        rotated_track = DisplayTrack.rotate(self, track, angle=track_angle)
+        ax.plot(rotated_track[:, 0], rotated_track[:, 1], color=self.driver_color)
+
+        # Add plot details
+        ax.legend([self.driver_name if self.driver_name else "Fastest Lap"])
+        ax.set_title(f"{self.session.event['Location']} - {self.driver_name if self.driver_name else 'Fastest Driver'}")
+        ax.set_xticks([])
+        ax.set_yticks([])
+        ax.set_aspect('equal')
+
+        # Display the plot in Streamlit
+        st.pyplot(fig)

@@ -15,3 +15,6 @@ clear:
 
 show: 
 	ls $(CACHE_PATH)
+
+stream: 
+	streamlit run $(FILE).py
