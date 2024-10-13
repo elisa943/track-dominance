@@ -52,7 +52,7 @@ class DisplayTrack(Track):
     
     def plot_streamlit(self):
         fig, ax = plt.subplots()
-
+        
         fastest_lap = self.session.laps.pick_fastest()
         
         if self.driver_name != None: 

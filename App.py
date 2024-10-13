@@ -47,9 +47,9 @@ class App():
         )
         return driver_1, driver_2
 
-    def load_data(self, session_selected):
+    @staticmethod
+    def load_data(session_selected):
         with st.spinner('Loading data...'):
-            
             try:
                 session_selected.load()
                 return session_selected
