@@ -52,7 +52,6 @@ class App():
             
             try:
                 session_selected.load()
-                
-                return (session_selected, circuit)
+                return session_selected
             except Exception as e:
-                return (None, None)
+                return None

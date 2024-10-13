@@ -35,6 +35,7 @@ def main():
 
                     # Get session (Race)
                     session_selected = ff.get_session(st.session_state.season_selected, st.session_state.circuit_selected, type_of_session)
+                    
                     st.session_state.session_selected = app.load_data(session_selected)
                     if st.session_state.session_selected != None:
                         circuit = session_selected.get_circuit_info()
