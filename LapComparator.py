@@ -17,7 +17,6 @@ class LapComparator(): # https://docs.fastf1.dev/time_explanation.html#lap-timin
 
     def laps(self):
         lap = [None, None]
-        
 
         # Retrieve laps
         for i in range(2):
@@ -33,7 +32,7 @@ class LapComparator(): # https://docs.fastf1.dev/time_explanation.html#lap-timin
         lap[0] = lap[0].get_telemetry()
         lap[1] = lap[1].get_telemetry()
 
-        return lap, car_data
+        return lap
 
     def speeds(self, lap):
         speed = [None, None]
@@ -64,7 +63,7 @@ class LapComparator(): # https://docs.fastf1.dev/time_explanation.html#lap-timin
         return uniform_timestamps, uniform_speeds
 
     def get_uniform_time_speed(self):
-        laps, car_data = self.laps()
+        laps = self.laps()
         speeds, timestamps = self.speeds(laps)
 
         # Interpolate both drivers' speeds and timestamps
@@ -81,9 +80,8 @@ class LapComparator(): # https://docs.fastf1.dev/time_explanation.html#lap-timin
     def plot_streamlit(self): # Uniform speed isn't the best option : ex : HAM and ZHO
 
         uniform_timestamps, uniform_speeds = self.get_uniform_time_speed()
-
         st.title(f"Speed Profile for {self.driver_abbr[0]} and {self.driver_abbr[0]}")
-
+        
         # Create a matplotlib figure
         fig, ax = plt.subplots(figsize=(12, 6))
 
@@ -99,3 +97,10 @@ class LapComparator(): # https://docs.fastf1.dev/time_explanation.html#lap-timin
 
         # Use Streamlit to display the plot
         st.pyplot(fig)
+    
+    def get_distances(self):
+        laps = self.laps()
+        distances = [None, None]
+        distances[0] = laps[0]['Distance'].to_numpy()
+        distances[1] = laps[1]['Distance'].to_numpy()
+        return distances

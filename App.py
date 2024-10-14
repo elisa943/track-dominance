@@ -18,7 +18,7 @@ class App():
     
     def which_year(self):
         current_year = datetime.now().year
-        years = list(range(1950, current_year + 1))
+        years = list(range(2000, current_year + 1))
         selected_date = st.selectbox(
             "Which season?", 
             options=years,
