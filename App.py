@@ -4,12 +4,6 @@ from fastf1.ergast import Ergast
 from datetime import datetime
 import time
 
-"""
-# Sélection d'un pilote
-pilot = st.selectbox('Choisis un pilote', ['Hamilton', 'Verstappen', 'Leclerc'])
-st.write(f'Vous avez choisi : {pilot}')
-"""
-
 class App():
     def __init__(self): 
         # Titre de la page
@@ -17,6 +11,7 @@ class App():
         st.sidebar.header("F1 Track Dominance")
     
     def which_year(self):
+        """ Creates selection box to select a year """
         current_year = datetime.now().year
         years = list(range(2000, current_year + 1))
         selected_date = st.selectbox(
@@ -27,6 +22,7 @@ class App():
         return selected_date
     
     def which_circuit(self, circuits):
+        """ Creates selection box to select a track """
         circuit = st.selectbox(
             "Which circuit?", 
             circuits,
@@ -35,6 +31,7 @@ class App():
         return circuit 
 
     def which_drivers(self, drivers_name):
+        """ Creates selection boxes to select 2 drivers """
         driver_1 = st.selectbox(
             "First driver?", 
             drivers_name,
@@ -51,7 +48,7 @@ class App():
     def load_data(session_selected):
         with st.spinner('Loading data...'):
             try:
-                session_selected.load()
+                session_selected.load(weather=False, messages=False)
                 return session_selected
             except Exception as e:
                 return None
